@@ -42,7 +42,7 @@ export default function OrphanagesMap () {
             tooltip
             onPress={()=>handdleNavigationToScreen('Orphanages Details')}>
               <View style={styles.calloutContainer}>
-               <Text style={styles.calloutText}> Lar das meninas </Text>
+               <Text style={styles.calloutText}> Orfanato Esperança </Text>
               </View>
             </Callout>
 

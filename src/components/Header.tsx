@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 
 interface HeaderProps {
   title:string,
-  showCancel: boolean
+  showCancel?: boolean
 }
 const components: React.FC<HeaderProps> = ({title, showCancel=true}) => {
 
