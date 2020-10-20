@@ -1,15 +1,29 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Dimensions,Text } from 'react-native';
 import  MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps'
 import mapMarker from "../images/map_marker.png";
 import { Feather} from '@expo/vector-icons'
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { RectButton } from 'react-native-gesture-handler';
+import api from '../services/api';
 
+interface Orphanages{
+  id:number,
+  name:string,
+  latitude:number,
+  longitude:number,
+}
 export default function OrphanagesMap () {
 
   const navigation = useNavigation()
+  const [orphanages, setOrphanages] = useState<Array<Orphanages>>([])
+
+  useFocusEffect(()=>{
+    api.get('orphanages').then(response =>{
+      setOrphanages(response.data)
+    })
+  })
 
   function handdleNavigationToScreen(name:string){
     navigation.navigate(name)
@@ -27,29 +41,36 @@ export default function OrphanagesMap () {
         latitudeDelta:0.008,
         longitudeDelta:0.008
        }}>
-          <Marker
-          icon={mapMarker}
-          calloutAnchor={{
-            x:2.3,
-            y:0.8,
-           }}
-          coordinate={{
-            latitude:16.8879404,
-            longitude:-24.9847277,
-           }}
-          >
-            <Callout
-            tooltip
-            onPress={()=>handdleNavigationToScreen('Orphanages Details')}>
-              <View style={styles.calloutContainer}>
-               <Text style={styles.calloutText}> Orfanato Esperança </Text>
-              </View>
-            </Callout>
+      {
+        orphanages.map(orphanage=>{
+          return(
+            <Marker
+            key={orphanage.id}
+            icon={mapMarker}
+            calloutAnchor={{
+              x:2.3,
+              y:0.8,
+             }}
+            coordinate={{
+              latitude:orphanage.latitude,
+              longitude:orphanage.longitude,
+             }}
+            >
+              <Callout
+              tooltip
+              onPress={()=>handdleNavigationToScreen('Orphanages Details')}>
+                <View style={styles.calloutContainer}>
+                 <Text style={styles.calloutText}> {orphanage.name}</Text>
+                </View>
+              </Callout>
 
-          </Marker>
+            </Marker>
+          )
+        })
+      }
        </MapView>
        <View style={styles.footer}>
-         <Text style={styles.footerText}> 2 orfanatos encontrados</Text>
+         <Text style={styles.footerText}> {orphanages.length} orfanatos encontrados</Text>
          <RectButton
          style={styles.createOrphanageButton}
          onPress={()=>handdleNavigationToScreen('Select Map Position')}
